@@ -14,17 +14,17 @@ import ru.yandex.practicum.model.hub.events.HubEvent;
 @Component
 public class HubDeviceAddedEventHandler extends HubEventHandler<DeviceAddedEventAvro> {
 
-	public HubDeviceAddedEventHandler(Config config, Producer producer) {
+    public HubDeviceAddedEventHandler(Config config, Producer producer) {
 
-		super(config, producer);
-	}
+        super(config, producer);
+    }
 
-	@Override
-	protected DeviceAddedEventAvro mapToAvro(HubEvent event) {
-		EventDeviceAdded hubEvent = (EventDeviceAdded) event;
-		return DeviceAddedEventAvro.newBuilder()
-				.setId(hubEvent.getId())
-				.setType(DeviceTypeAvro.valueOf(hubEvent.getDeviceType().name()))
-				.build();
-	}
+    @Override
+    protected DeviceAddedEventAvro mapToAvro(HubEvent event) {
+        EventDeviceAdded hubEvent = (EventDeviceAdded) event;
+        return DeviceAddedEventAvro.newBuilder()
+                .setId(hubEvent.getId())
+                .setType(DeviceTypeAvro.valueOf(hubEvent.getDeviceType().name()))
+                .build();
+    }
 }
