@@ -3,7 +3,7 @@ package ru.yandex.practicum.service;
 import lombok.AllArgsConstructor;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.exeption.NotFoundException;
+import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.handler.Handler;
 import ru.yandex.practicum.handler.hub.HubEventHandler;
 import ru.yandex.practicum.handler.sensor.SensorEventHandler;

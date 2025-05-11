@@ -1,7 +1,6 @@
 package ru.yandex.practicum.handler.hub;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.config.kafka.Config;
 import ru.yandex.practicum.config.kafka.Producer;
 import ru.yandex.practicum.handler.HandlerHubEvent;
 import ru.yandex.practicum.kafka.telemetry.event.*;
@@ -16,8 +15,8 @@ import java.util.List;
 @Component
 public class HubScenarioAddedEventHandler extends HubEventHandler<ScenarioAddedEventAvro> {
 
-	public HubScenarioAddedEventHandler(Config config, Producer producer) {
-		super(config, producer);
+	public HubScenarioAddedEventHandler(Producer producer) {
+		super(producer);
 	}
 
 	@Override
