@@ -1,6 +1,6 @@
 package ru.yandex.practicum.handler;
 
-import ru.yandex.practicum.model.hub.enums.HubEventType;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface HandlerHubEvent {
-    HubEventType value();
+    HubEventProto.PayloadCase value();
 }

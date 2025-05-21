@@ -2,13 +2,13 @@ package ru.yandex.practicum.handler.sensor;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.config.kafka.Producer;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.SwitchSensorEvent;
 import ru.yandex.practicum.handler.HandlerSensorEvent;
 import ru.yandex.practicum.kafka.telemetry.event.SwitchSensorAvro;
-import ru.yandex.practicum.model.sensor.enums.SensorEventType;
-import ru.yandex.practicum.model.sensor.events.SensorEvent;
-import ru.yandex.practicum.model.sensor.events.SwitchSensorEvent;
 
-@HandlerSensorEvent(SensorEventType.SWITCH_SENSOR_EVENT)
+
+@HandlerSensorEvent(SensorEventProto.PayloadCase.SWITCH_SENSOR_EVENT)
 @Component
 public class SwitchSensorEventHandler extends SensorEventHandler<SwitchSensorAvro> {
 	public SwitchSensorEventHandler(Producer producer) {
@@ -16,8 +16,8 @@ public class SwitchSensorEventHandler extends SensorEventHandler<SwitchSensorAvr
 	}
 
 	@Override
-	protected SwitchSensorAvro mapToAvro(SensorEvent event) {
-		SwitchSensorEvent sensorEvent = (SwitchSensorEvent) event;
+	protected SwitchSensorAvro mapToAvro(SensorEventProto event) {
+		SwitchSensorEvent sensorEvent = event.getSwitchSensorEvent();
 		return SwitchSensorAvro.newBuilder()
 				.setState(sensorEvent.getState())
 				.build();
