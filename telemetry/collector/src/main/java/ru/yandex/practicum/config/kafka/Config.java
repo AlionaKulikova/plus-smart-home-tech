@@ -15,16 +15,15 @@ import java.util.Map;
 @Configuration
 @Getter
 public class Config {
-    @Value("${spring.kafka.bootstrapServer}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServer;
+
     @Bean
     public KafkaProducer<String, SpecificRecordBase> getProducer() {
         Map<String, Object> config = new HashMap<>();
-
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SerializerToAvro.class);
-
         return new KafkaProducer<>(config);
     }
 }
