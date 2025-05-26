@@ -25,8 +25,7 @@ public class SerializerToAvro implements Serializer<SpecificRecordBase> {
             encoder.flush();
             return out.toByteArray();
         } catch (IOException error) {
-            throw new SerializationException("При сериализации данных для топика: " + topic + " возникла ошибка: ",
-                    error);
+            throw new SerializationException("При сериализации данных для топика: " + topic + " возникла ошибка: ", error);
         }
     }
 }

@@ -1,26 +1,52 @@
 package ru.yandex.practicum.handler.sensor;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.specific.SpecificRecordBase;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.config.kafka.Producer;
-import ru.yandex.practicum.handler.HandlerSensorEvent;
+import ru.yandex.practicum.config.kafka.KafkaClient;
+import ru.yandex.practicum.grpc.telemetry.event.LightSensorProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
+import ru.yandex.practicum.handler.TimestampMapper;
 import ru.yandex.practicum.kafka.telemetry.event.LightSensorAvro;
-import ru.yandex.practicum.model.sensor.enums.SensorEventType;
-import ru.yandex.practicum.model.sensor.events.LightSensorEvent;
-import ru.yandex.practicum.model.sensor.events.SensorEvent;
+import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 
-@HandlerSensorEvent(SensorEventType.LIGHT_SENSOR_EVENT)
+@Slf4j
 @Component
-public class LightSensorEventHandler extends SensorEventHandler<LightSensorAvro> {
-	public LightSensorEventHandler(Producer producer) {
-		super(producer);
-	}
+@RequiredArgsConstructor
+public class LightSensorEventHandler implements SensorEventHandler {
 
-	@Override
-	protected LightSensorAvro mapToAvro(SensorEvent event) {
-		LightSensorEvent sensorEvent = (LightSensorEvent) event;
-		return LightSensorAvro.newBuilder()
-				.setLinkQuality(sensorEvent.getLinkQuality())
-				.setLuminosity(sensorEvent.getLuminosity())
-				.build();
-	}
+    @Value(value = "${sensorEventTopic}")
+    private String topic;
+    private final KafkaClient kafkaClient;
+
+    @Override
+    public SensorEventProto.PayloadCase getMessageType() {
+        return SensorEventProto.PayloadCase.LIGHT_SENSOR_EVENT;
+    }
+
+    @Override
+    public void handle(SensorEventProto eventProto) {
+        SensorEventAvro eventAvro = map(eventProto);
+        ProducerRecord<String, SpecificRecordBase> producerRecord = new ProducerRecord<>(topic, null,
+                eventAvro.getTimestamp().getEpochSecond(), null, eventAvro);
+        kafkaClient.getProducer().send(producerRecord);
+        log.info("Event from sensor ID = {} sent to topic: {}", eventAvro.getId(), topic);
+    }
+
+    private SensorEventAvro map(SensorEventProto eventProto) {
+        LightSensorProto lightSensorProto = eventProto.getLightSensorEvent();
+        LightSensorAvro lightSensorAvro = LightSensorAvro.newBuilder()
+                .setLuminosity(lightSensorProto.getLuminosity())
+                .setLinkQuality(lightSensorProto.getLinkQuality())
+                .build();
+        return SensorEventAvro.newBuilder()
+                .setId(eventProto.getId())
+                .setHubId(eventProto.getHubId())
+                .setTimestamp(TimestampMapper.mapToInstant(eventProto.getTimestamp()))
+                .setPayload(lightSensorAvro)
+                .build();
+    }
 }
