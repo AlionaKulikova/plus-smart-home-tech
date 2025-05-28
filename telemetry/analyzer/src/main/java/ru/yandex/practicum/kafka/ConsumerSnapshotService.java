@@ -1,6 +1,8 @@
 package ru.yandex.practicum.kafka;
 
-import deserializer.SensorEventDeserializer;
+import deserializer.SensorsSnapshotDeserializer;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -14,37 +16,38 @@ import java.util.List;
 import java.util.Properties;
 
 @Service
-public class KafkaConsumerService implements AutoCloseable {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ConsumerSnapshotService implements AutoCloseable {
 
-    private final KafkaConsumer<String, SpecificRecordBase> consumer;
+    final KafkaConsumer<String, SpecificRecordBase> consumer;
 
-    public KafkaConsumerService(
-                                @Value("${kafka.group-id}") String groupId,
-                                @Value("${kafka.auto-commit}") String autoCommit,
-                                @Value("${kafka.bootstrap-servers}") String bootstrapServers) {
+    public ConsumerSnapshotService(@Value("${kafka.group-id.snapshot}") String groupId,
+                                   @Value("${kafka.auto-commit}") String autoCommit,
+                                   @Value("${kafka.bootstrap-servers}") String bootstrapServers) {
         Properties config = new Properties();
         config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, autoCommit);
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class.getName());
+        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorsSnapshotDeserializer.class.getName());
 
         this.consumer = new KafkaConsumer<>(config);
     }
 
-    public ConsumerRecords<String, SpecificRecordBase> poll(Duration duration){
+    public ConsumerRecords<String, SpecificRecordBase> poll(Duration duration) {
+
         return consumer.poll(duration);
     }
 
-    public void subscribe(List<String> topics){
+    public void subscribe(List<String> topics) {
         consumer.subscribe(topics);
     }
 
-    public void commitSync(){
+    public void commitSync() {
         consumer.commitSync();
     }
 
-    public void wakeup(){
+    public void wakeup() {
         consumer.wakeup();
     }
 

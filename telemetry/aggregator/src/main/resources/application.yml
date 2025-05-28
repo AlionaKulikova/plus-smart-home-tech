@@ -8,13 +8,3 @@ kafka:
   snapshot-topic: telemetry.snapshots.v1
   group-id: aggregator-group
   auto-commit: false
-
-logbook:
-  format:
-    style: http
-
-logging:
-  level:
-    org:
-      zalando:
-        logbook: TRACE
