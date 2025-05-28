@@ -12,13 +12,3 @@ kafka:
   bootstrap-servers: localhost:9092
   hub-topic: telemetry.hubs.v1
   sensor-topic: telemetry.sensors.v1
-
-logbook:
-  format:
-    style: http
-
-logging:
-  level:
-    org:
-      zalando:
-        logbook: TRACE

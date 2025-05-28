@@ -10,42 +10,45 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.kafka.KafkaConsumerService;
-import ru.yandex.practicum.kafka.KafkaProducerService;
-import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
+import ru.yandex.practicum.handler.hub.HubEventHandler;
+import ru.yandex.practicum.handler.hub.HubEventHandlers;
+import ru.yandex.practicum.kafka.ConsumerHubService;
+import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AggregationStarter {
+public class HubEventProcessor implements Runnable {
+    final ConsumerHubService consumer;
+    final HubEventHandlers hubHandlers;
 
-    final KafkaConsumerService consumer;
-    final KafkaProducerService producer;
-    final SensorSnapshotService sensorSnapshotService;
+    @Value("${kafka.topics.hub}")
+    String topic;
 
-    @Value("${kafka.sensor-topic}")
-    String sensorTopic;
-
-    @Value("${kafka.snapshot-topic}")
-    String snapshotTopic;
-
-    public void start() {
+    @Override
+    public void run() {
         try {
             Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
-            consumer.subscribe(List.of(sensorTopic));
+            consumer.subscribe(List.of(topic));
+            Map<String, HubEventHandler> hubHandlersMap = hubHandlers.getHandlers();
 
             while (true) {
-                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofMillis(5000));
-
+                ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofMillis(1000));
                 if (!records.isEmpty()) {
                     for (ConsumerRecord<String, SpecificRecordBase> record : records) {
-                        SensorEventAvro event = (SensorEventAvro) record.value();
-                        sensorSnapshotService.updateState(event).ifPresent(snapshot ->
-                                producer.send(snapshotTopic, snapshot.getHubId(), snapshot));
+                        HubEventAvro hubEvent = (HubEventAvro) record.value();
+                        String payloadName = hubEvent.getPayload().getClass().getSimpleName();
+
+                        if (hubHandlersMap.containsKey(payloadName)) {
+                            hubHandlersMap.get(payloadName).handle(hubEvent);
+                        } else {
+                            throw new IllegalArgumentException("Не найден обработчик для события: " + hubEvent);
+                        }
                     }
                     consumer.commitSync();
                 }
@@ -53,16 +56,14 @@ public class AggregationStarter {
         } catch (WakeupException ignored) {
             log.error("Получено исключение WakeupException");
         } catch (Exception e) {
-            log.error("Возникла ошибка при обработке сообщений от датчиков", e);
+            log.error("Возникла ошибка при обработке сообщений", e);
         } finally {
             try {
-                producer.flush();
                 consumer.commitSync();
             } catch (Exception e) {
                 log.error("Возникла ошибка при сбросе данных", e);
             } finally {
                 consumer.close();
-                producer.close();
             }
         }
     }

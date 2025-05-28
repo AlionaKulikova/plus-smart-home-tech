@@ -21,12 +21,12 @@ import java.time.Instant;
 public class GrpcSensorEventMapper {
     public SensorEventAvro toAvro(SensorEventProto event) {
         Object payload = switch (event.getPayloadCase()) {
-            case CLIMATE_SENSOR_EVENT -> toClimateSensorAvro(event.getClimateSensorEvent());
             case LIGHT_SENSOR_EVENT -> toLightSensorAvro(event.getLightSensorEvent());
             case MOTION_SENSOR_EVENT -> toMotionSensorAvro(event.getMotionSensorEvent());
+            case CLIMATE_SENSOR_EVENT -> toClimateSensorAvro(event.getClimateSensorEvent());
             case SWITCH_SENSOR_EVENT -> toSwitchSensorAvro(event.getSwitchSensorEvent());
             case TEMPERATURE_SENSOR_EVENT -> toTemperatureSensorAvro(event.getTemperatureSensorEvent());
-            default -> throw new IllegalArgumentException("Неизвестный тип события: " + event.getClass().getName());
+            default -> throw new IllegalArgumentException("Не найден тип события " + event.getClass().getName());
         };
         Instant timestamp = Instant.ofEpochSecond(event.getTimestamp().getSeconds(), event.getTimestamp().getNanos());
 

@@ -29,9 +29,10 @@ public class BaseAvroDeserializer<T extends SpecificRecordBase> implements Deser
                 BinaryDecoder decoder = decoderFactory.binaryDecoder(data, null);
                 return this.reader.read(null, decoder);
             }
+
             return null;
         } catch (Exception e) {
-            throw new DeserializationException("Ошибка десериализации данных из топика [" + topic + "]", data, false, e);
+            throw new DeserializationException("Ошибка при десериализации данных из топика" + topic , data, false, e);
         }
     }
 }
