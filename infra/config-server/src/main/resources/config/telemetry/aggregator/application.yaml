@@ -1,10 +1,8 @@
-spring:
-        application:
-                name: aggregator
-
-kafka:
-        bootstrap-servers: localhost:9092
-        sensor-topic: telemetry.sensors.v1
-        snapshot-topic: telemetry.snapshots.v1
-        group-id: aggregator-group
-        auto-commit: false
+aggregator:
+  kafka:
+    bootstrapServer: localhost:9092
+    group:
+      id: aggregator
+    topic:
+      in: telemetry.sensors.v1
+      out: telemetry.snapshots.v1
