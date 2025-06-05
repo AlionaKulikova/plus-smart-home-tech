@@ -4,7 +4,7 @@ services:
     container_name: analyzer_postgres
     environment:
       POSTGRES_DB: analyzer
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: smarthome
+      POSTGRES_PASSWORD: smarthome
     ports:
       - "6432:5432"
