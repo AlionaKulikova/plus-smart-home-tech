@@ -10,7 +10,6 @@ spring:
   application:
     name: analyzer
   datasource:
-    driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:6432/analyzer
     username: smarthome
     password: smarthome
