@@ -10,11 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReserveProductsDto {
-	@NotBlank
-	private double deliveryWeight;
-	@NotBlank
-	private double deliveryVolume;
-	@NotBlank
-	private Boolean fragile;
+public class NewOrder {
+    @NotBlank
+    private CartDto shoppingCart;
+
+    @NotBlank
+    private AddressWarehouseDto deliveryAddress;
 }
