@@ -65,7 +65,6 @@ public class DeliveryServiceImpl implements DeliveryService {
 		deliveryRepository.save(delivery);
 	}
 
-	@Transactional(readOnly = true)
 	@Override
 	public Double getCostDelivery(OrderDto orderDto) {
 		Delivery delivery = getDelivery(orderDto.getDeliveryId());

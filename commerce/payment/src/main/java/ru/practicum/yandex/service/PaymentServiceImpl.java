@@ -42,7 +42,6 @@ public class PaymentServiceImpl implements PaymentService {
 		return paymentMapper.paymentToPaymentDto(paymentRepository.save(payment));
 	}
 
-	@Transactional(readOnly = true)
 	@Override
 	public double getTotalCost(OrderDto orderDto) {
 		checkOrder(orderDto);
@@ -58,7 +57,6 @@ public class PaymentServiceImpl implements PaymentService {
 		paymentRepository.save(payment);
 	}
 
-	@Transactional(readOnly = true)
 	@Override
 	public double getProductsCost(OrderDto orderDto) {
 		Map<String, Long> products = orderDto.getProducts();

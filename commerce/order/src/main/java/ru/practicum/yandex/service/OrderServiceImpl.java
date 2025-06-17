@@ -30,7 +30,6 @@ public class OrderServiceImpl implements OrderService {
 	private final DeliveryClient deliveryClient;
 	private final PaymentClient paymentClient;
 
-	@Transactional(readOnly = true)
 	@Override
 	public List<OrderDto> getUserOrders(String username) {
 		CartDto shoppingCart = cartClient.getShoppingCart(username);
