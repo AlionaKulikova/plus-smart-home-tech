@@ -1,7 +1,7 @@
 package ru.yandex.practicum.types;
 
 public enum ProductCategory {
-	LIGHTING,
-	CONTROL,
-	SENSORS
+    LIGHTING,
+    CONTROL,
+    SENSORS
 }

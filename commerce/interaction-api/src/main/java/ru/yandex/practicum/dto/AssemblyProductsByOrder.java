@@ -6,15 +6,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReserveProductsDto {
-	@NotBlank
-	private double deliveryWeight;
-	@NotBlank
-	private double deliveryVolume;
-	@NotBlank
-	private Boolean fragile;
+public class AssemblyProductsByOrder {
+    @NotBlank
+    private Map<String, Long> products;
+
+    @NotBlank
+    private String orderId;
 }

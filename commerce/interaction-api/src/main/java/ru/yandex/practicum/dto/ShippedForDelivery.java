@@ -10,11 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ReserveProductsDto {
-	@NotBlank
-	private double deliveryWeight;
-	@NotBlank
-	private double deliveryVolume;
-	@NotBlank
-	private Boolean fragile;
+public class ShippedForDelivery {
+    @NotBlank
+    private String orderId;
+
+    @NotBlank
+    private String deliveryId;
 }
